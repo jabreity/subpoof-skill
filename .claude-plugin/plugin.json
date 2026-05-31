@@ -1,0 +1,20 @@
+{
+  "name": "subpoof",
+  "description": "Drive the subpoof subdomain-intelligence API from Claude Code: submit and poll subdomain-enumeration scans, read results, list newly-registered domains, query the subdomain-label dictionary, and pull per-domain scan history.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Jason Breitwieser"
+  },
+  "homepage": "https://subpoof.com",
+  "repository": "https://github.com/jabreity/subpoof-skill",
+  "license": "MIT",
+  "keywords": [
+    "subpoof",
+    "subdomain",
+    "subdomain-enumeration",
+    "domain-monitoring",
+    "security",
+    "recon",
+    "api"
+  ]
+}

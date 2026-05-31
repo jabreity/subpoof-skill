@@ -1,0 +1,15 @@
+{
+  "name": "subpoof-skill",
+  "owner": {
+    "name": "Jason Breitwieser",
+    "url": "https://github.com/jabreity"
+  },
+  "plugins": [
+    {
+      "name": "subpoof",
+      "source": "./",
+      "description": "Drive the subpoof subdomain-intelligence API from Claude Code: scans, results, registrations, dictionary, and per-domain history.",
+      "version": "1.0.0"
+    }
+  ]
+}
