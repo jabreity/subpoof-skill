@@ -7,7 +7,7 @@ domains, query the subdomain-label dictionary, and pull per-domain scan history.
 
 Once installed, Claude invokes it automatically when you ask things like
 "enumerate the subdomains of example.com", "what changed for example.com since
-last scan", or "show me newly-registered .io domains".
+last scan", or "show me newly-registered .com domains".
 
 ## Install
 
