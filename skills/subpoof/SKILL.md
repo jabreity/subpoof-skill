@@ -152,8 +152,13 @@ Filter with `status` and/or exact `domain`. Paginated. Use this to find a prior
 ### `GET /v1/registrations` - newly-registered domains
 
 A daily feed of freshly-registered domains. Filter with `q` (case-insensitive
-domain substring), `tld` (with or without the leading dot, e.g. `.io` or `io`),
+domain substring), `tld` (with or without the leading dot, e.g. `.com` or `com`),
 and a `date_from`/`date_to` range (inclusive, YYYY-MM-DD). Paginated.
+
+Coverage: this feed is generic-TLD (gTLD) only, sourced from ICANN CZDS zone
+files (.com, .org, .xyz, .app, ...). Country-code TLDs such as .io, .co, and .ai
+are not included, so filtering to a ccTLD returns no results. Do not tell the
+user a ccTLD will appear later; it will not come through this feed.
 
 ### `GET /v1/dictionary` - subdomain-label dictionary
 
