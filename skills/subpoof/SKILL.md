@@ -151,9 +151,10 @@ Filter with `status` and/or exact `domain`. Paginated. Use this to find a prior
 
 ### `GET /v1/registrations` - newly-registered domains
 
-A daily feed of freshly-registered domains. Filter with `q` (case-insensitive
-domain substring), `tld` (with or without the leading dot, e.g. `.com` or `com`),
-and a `date_from`/`date_to` range (inclusive, YYYY-MM-DD). Paginated.
+A daily feed of freshly-registered domains. Filter with `q` (domain PREFIX
+match, e.g. `q=paypal` matches paypal-login.com but not secure-paypal.com),
+`tld` (with or without the leading dot, e.g. `.com` or `com`), and a
+`date_from`/`date_to` range (inclusive, YYYY-MM-DD). Paginated.
 
 Coverage: this feed is generic-TLD (gTLD) only, sourced from ICANN CZDS zone
 files (.com, .org, .xyz, .app, ...). Country-code TLDs such as .io, .co, and .ai
