@@ -1,6 +1,6 @@
 ---
 name: subpoof
-description: Use the subpoof subdomain-intelligence API at https://api.subpoof.com/v1 - submit and poll subdomain-enumeration scans, read scan results, list newly-registered domains, query the subdomain-label dictionary, and pull per-domain scan history. Use when the user wants to enumerate a domain's subdomains, check what changed for a domain, find newly-registered domains for a TLD, or otherwise work with subpoof programmatically.
+description: Use the subpoof subdomain-intelligence API at https://api.subpoof.com/v1 - submit and poll subdomain-enumeration scans, read scan results, list newly-registered domains, query the subdomain-label dictionary, pull per-domain scan history, and manage monitoring (watches for cert/domain expiry and brand lookalikes, outbound webhooks, and recurring scan schedules). Use when the user wants to enumerate a domain's subdomains, check what changed for a domain, find newly-registered domains for a TLD, set up monitoring or alerts for a domain or brand, or otherwise work with subpoof programmatically.
 ---
 
 # subpoof API
@@ -170,7 +170,65 @@ root domain), `category`, or `monitored` (`yes`/`no`). Paginated.
 ### `GET /v1/domains/{domain}/history` - per-domain timeline
 
 The scan-history timeline for a domain, each entry diffed against the prior
-scan - what subdomains appeared or disappeared over time.
+scan - what subdomains appeared or disappeared over time. The oldest scan is
+returned as a `baseline` entry (no diff), so a domain with a single scan still
+returns one row rather than an empty timeline.
+
+### `GET /v1/account` - plan and quota standing
+
+Returns `plan`, `limit`, `used`, `remaining`, and `resets_on` (`limit` and
+`remaining` are `-1` when unlimited). Read this to check headroom before
+spending quota; it is never charged.
+
+## Monitoring and automation
+
+These surfaces manage standing configuration. None of them consume a query
+credit - the monthly quota meters intelligence reads and scans, not your
+monitoring setup. Everything is scoped to the account's org.
+
+### Watches - `/v1/watches`
+
+Standing monitors the service checks daily. `GET /v1/watches` lists them
+(filter by `type`); `POST /v1/watches` creates one; `GET`/`DELETE
+/v1/watches/{id}` fetch and remove. Types: `cert_expiry`, `domain_expiry`,
+`domain_changes`, `label`, `lookalike` (all take a `target` domain/brand), and
+`dict_search` (no target - set at least one of `q`, `domain_filter`,
+`category`, `monitored`). `threshold_days` (1-365, default 30) sets how many
+days before expiry an expiry watch alerts. Creating is idempotent on type +
+target (`201` new, `200` if it already existed).
+
+### Webhooks - `/v1/webhook`
+
+One outbound webhook per account; the service POSTs HMAC-signed JSON when events
+fire. `GET /v1/webhook` returns the config including the signing `secret` (used
+to verify deliveries); `PUT /v1/webhook` creates/updates (`url`, `enabled`,
+`event_types`); `DELETE /v1/webhook` removes it. Also `POST /v1/webhook/rotate`
+(new secret), `POST /v1/webhook/test` (queue a test event),
+`GET /v1/webhook/deliveries` (delivery log), and
+`POST /v1/webhook/deliveries/{id}/redeliver` (retry a dead one). Updating
+preserves the secret; rotate to change it. Event types: `scan.completed`,
+`watch.alert`, `domain.changes_detected`, `label.new_domain`,
+`dict_search.new_label`, `lookalike.registered` (omit `event_types` for all).
+
+### Schedules - `/v1/schedules`
+
+Recurring scans. `GET /v1/schedules` lists; `POST /v1/schedules` creates
+(`domain`, `period`: daily/weekly/monthly, optional `inherit_from_job` to reuse
+an existing job's enrichments); `GET`/`DELETE /v1/schedules/{id}`; and
+`POST /v1/schedules/{id}/toggle` to pause/resume. Idempotent on domain + period.
+Each scan a schedule spawns charges a credit when it runs, like a manual scan.
+
+### Re-run analysis on a scan
+
+`POST /v1/scans/{job_id}/reanalyze` re-runs identity + blocklist checks on a
+completed scan's existing subdomain set (no re-enumeration);
+`POST /v1/scans/{job_id}/rbl-check` refreshes only the mail-host DNSBL status.
+Both return a new `job_id` to poll and reuse an in-flight re-run if one exists.
+
+### Pin a dictionary label
+
+`POST /v1/dictionary/monitor` with `{"label": "..."}` toggles a label's pinned
+state, or pass `"monitored": true|false` to set it explicitly.
 
 ## How to behave
 
