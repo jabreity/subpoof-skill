@@ -46,6 +46,10 @@ making unauthenticated calls.
 - **Dictionary** - the ranked subdomain-label dictionary built from prior scans.
 - **History** - the per-domain timeline of what subdomains appeared or
   disappeared over time.
+- **Monitoring** - watches (cert/domain expiry, brand lookalikes, domain-change
+  and dictionary-search alerts), outbound HMAC-signed webhooks, and recurring
+  scan schedules, plus account/quota status. Managing these does not spend a
+  query credit.
 - **Conventions** - the `data`/`pagination` envelope, the `error` envelope with
   `request_id`, and the monthly-quota rate-limit headers, so Claude paginates,
   handles errors, and backs off on `429` correctly.
